@@ -16,17 +16,13 @@ TOKEN_PATH = os.getenv("TOKEN_PATH", "token_path")
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 
-def main():
-  """Shows basic usage of the Google Calendar API.
-  Prints the start and name of the next 10 events on the user's calendar.
+def calendar():
+  """Gets the first ten events of the user in the calendar. 
+  Use this tool whenever the user asks for their upcoming events
   """
   creds = None
-  # The file token.json stores the user's access and refresh tokens, and is
-  # created automatically when the authorization flow completes for the first
-  # time.
   if os.path.exists(TOKEN_PATH):
     creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
-  # If there are no (valid) credentials available, let the user log in.
   if not creds or not creds.valid:
     if creds and creds.expired and creds.refresh_token:
       creds.refresh(Request())
@@ -42,9 +38,7 @@ def main():
   try:
     service = build("calendar", "v3", credentials=creds)
 
-    # Call the Calendar API
     now = datetime.datetime.now(tz=datetime.timezone.utc).isoformat()
-    print("Getting the upcoming 10 events")
     events_result = (
         service.events()
         .list(
@@ -59,17 +53,17 @@ def main():
     events = events_result.get("items", [])
 
     if not events:
-      print("No upcoming events found.")
-      return
+      return "No upcoming events found."
 
-    # Prints the start and name of the next 10 events
+    events_list = []
     for event in events:
       start = event["start"].get("dateTime", event["start"].get("date"))
-      print(start, event["summary"])
+      events_list.append(f"{start}, {event["summary"]}")
 
+    return events_list
   except HttpError as error:
-    print(f"An error occurred: {error}")
+    return(f"An error occurred: {error}")
 
 
 if __name__ == "__main__":
-  main()
+  calendar()

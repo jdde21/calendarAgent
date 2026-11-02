@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 .env
 secret/
+backend/__pycache__
+backend/shutdown.py
+backend/startup.py
