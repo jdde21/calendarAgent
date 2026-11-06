@@ -57,22 +57,22 @@ def main():
 
     
     
-    
+    result = {}
     for index, course in enumerate(courses):
         response = service.courses().courseWork().list(courseId=course).execute()     
         if response:
+            result[course] = []
             subs = service.courses().courseWork().studentSubmissions().list(courseId=course, courseWorkId="-",userId="me",).execute().get("studentSubmissions", [])
             state_by_work = {s["courseWorkId"]: s["state"] for s in subs}
             courseWork = response["courseWork"]
-            print()
-            print("Work to be done for ", courseTitle[index])
+          
             for work in courseWork:
                 state = state_by_work.get(work["id"])
                 if state in ("NEW", "CREATED", "RECLAIMED_BY_STUDENT"):
-                    print("TO DO:", work["title"], work.get("dueDate"))
-            print()
-            
-        
+                    result[course].append(f"TO DO: {work["title"]} {work.get("dueDate")}")
+         
+    return result    
+    
   except HttpError as error:
     print(f"An error occurred: {error}")
 

@@ -12,7 +12,6 @@ TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
     
 app = FastAPI()
-
 http_client = httpx.AsyncClient()
 
 async def send_message(chat_id: int, text: str):
