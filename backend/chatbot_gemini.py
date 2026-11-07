@@ -3,6 +3,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 from calendar_tool import calendar
+from classroom_tool import main
 
 load_dotenv()
 
