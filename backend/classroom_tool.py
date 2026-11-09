@@ -1,4 +1,5 @@
 import os.path
+import calendar
 from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -20,9 +21,10 @@ SCOPES = [
 ]
 
 
-def main():
-  """Shows basic usage of the Classroom API.
-  Prints the names of the first 10 courses the user has access to.
+def classroom():
+  """Gets the tasks that are not yet done for each course. It returns
+  a dict containing the course title as a key and a list containing strings 
+  describing the course work as well as the deadline
   """
   creds = None
   # The file token.json stores the user's access and refresh tokens, and is
@@ -45,23 +47,23 @@ def main():
 
   try:
     courses = []
-    courseTitle = []
+    courseTitle = {}
     service = build("classroom", "v1", credentials=creds)
     request = service.courses().list(studentId="me", courseStates=["ACTIVE"], pageSize=50)
     
     while request is not None:
         response = request.execute()
         courses = courses + [course["id"] for course in response.get("courses", [])]
-        courseTitle = [course["name"] for course in response.get("courses", [])]
+        courseTitle = courseTitle | {course["id"]: course["name"] for course in response.get("courses", [])}
         request = service.courses().list_next(request, response)
 
     
     
     result = {}
-    for index, course in enumerate(courses):
+    for course in courses:
         response = service.courses().courseWork().list(courseId=course).execute()     
         if response:
-            result[course] = []
+            result[courseTitle[course]] = []
             subs = service.courses().courseWork().studentSubmissions().list(courseId=course, courseWorkId="-",userId="me",).execute().get("studentSubmissions", [])
             state_by_work = {s["courseWorkId"]: s["state"] for s in subs}
             courseWork = response["courseWork"]
@@ -69,7 +71,13 @@ def main():
             for work in courseWork:
                 state = state_by_work.get(work["id"])
                 if state in ("NEW", "CREATED", "RECLAIMED_BY_STUDENT"):
-                    result[course].append(f"TO DO: {work["title"]} {work.get("dueDate")}")
+                    dueDate = work.get("dueDate")
+                    if dueDate:
+                        result[courseTitle[course]].append(f"TO DO: {work["title"]} Due date on {calendar.month_name[dueDate["month"]]} {dueDate["day"]} {dueDate["year"]}")
+                    else:
+                        result[courseTitle[course]].append(f"TO DO: {work["title"]} No Due Date")
+            if not result[courseTitle[course]]:
+                del result[courseTitle[course]]
          
     return result    
     
@@ -78,4 +86,4 @@ def main():
 
 
 if __name__ == "__main__":
-  main()
+  print(classroom())
