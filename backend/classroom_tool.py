@@ -1,5 +1,6 @@
 import os.path
 import calendar
+from datetime import datetime
 from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -57,8 +58,6 @@ def classroom():
         courseTitle = courseTitle | {course["id"]: course["name"] for course in response.get("courses", [])}
         request = service.courses().list_next(request, response)
 
-    
-    
     result = {}
     for course in courses:
         response = service.courses().courseWork().list(courseId=course).execute()     
@@ -73,6 +72,8 @@ def classroom():
                 if state in ("NEW", "CREATED", "RECLAIMED_BY_STUDENT"):
                     dueDate = work.get("dueDate")
                     if dueDate:
+                        s = f"{dueDate["year"]}-{calendar.month_name[dueDate["month"]]}-{dueDate["day"]}"
+                        date = datetime.strptime(s, "%Y-%m-%d").date()
                         result[courseTitle[course]].append(f"TO DO: {work["title"]} Due date on {calendar.month_name[dueDate["month"]]} {dueDate["day"]} {dueDate["year"]}")
                     else:
                         result[courseTitle[course]].append(f"TO DO: {work["title"]} No Due Date")
