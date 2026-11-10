@@ -1,6 +1,6 @@
 import os.path
 import calendar
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from dotenv import load_dotenv
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -59,6 +59,9 @@ def classroom():
         request = service.courses().list_next(request, response)
 
     result = {}
+    today = date.today()
+    start_of_curr_week = today - timedelta(days=today.weekday())
+    start_of_next_week = start_of_curr_week + timedelta(days=14)
     for course in courses:
         response = service.courses().courseWork().list(courseId=course).execute()     
         if response:
@@ -72,9 +75,10 @@ def classroom():
                 if state in ("NEW", "CREATED", "RECLAIMED_BY_STUDENT"):
                     dueDate = work.get("dueDate")
                     if dueDate:
-                        s = f"{dueDate["year"]}-{calendar.month_name[dueDate["month"]]}-{dueDate["day"]}"
-                        date = datetime.strptime(s, "%Y-%m-%d").date()
-                        result[courseTitle[course]].append(f"TO DO: {work["title"]} Due date on {calendar.month_name[dueDate["month"]]} {dueDate["day"]} {dueDate["year"]}")
+                        s = f"{dueDate["year"]}-{dueDate["month"]}-{dueDate["day"]}"
+                        temp_date = datetime.strptime(s, "%Y-%m-%d").date()
+                        if temp_date >= start_of_curr_week and temp_date <= start_of_next_week:
+                          result[courseTitle[course]].append(f"TO DO: {work["title"]} Due date on {calendar.month_name[dueDate["month"]]} {dueDate["day"]} {dueDate["year"]}")
                     else:
                         result[courseTitle[course]].append(f"TO DO: {work["title"]} No Due Date")
             if not result[courseTitle[course]]:
