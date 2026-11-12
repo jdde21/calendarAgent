@@ -6,3 +6,8 @@ secret/
 backend/__pycache__
 backend/shutdown.py
 backend/startup.py
+.dev.vars
+.wrangler
+python_modules
+.venv
+.venv-workers

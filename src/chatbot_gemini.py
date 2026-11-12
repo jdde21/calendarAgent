@@ -4,10 +4,12 @@ from google.genai import types
 from dotenv import load_dotenv
 from calendar_tool import calendar
 from classroom_tool import classroom
+from workers import env
 
 load_dotenv()
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+# GOOGLE_API_KEY = env.GOOGLE_API_KEY
+GOOGLE_API_KEY = getattr(env, "GOOGLE_API_KEY", None)
 client = genai.Client(api_key=GOOGLE_API_KEY)
 
 prompt = "What are my events?"
