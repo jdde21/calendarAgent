@@ -6,10 +6,11 @@ from calendar_tool import calendar
 from classroom_tool import classroom
 from workers import env
 
-load_dotenv()
+
 
 # GOOGLE_API_KEY = env.GOOGLE_API_KEY
 GOOGLE_API_KEY = getattr(env, "GOOGLE_API_KEY", None)
+# GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 client = genai.Client(api_key=GOOGLE_API_KEY)
 
 prompt = "What are my events?"
@@ -22,6 +23,7 @@ def chatbot(prompt):
         )
     )
     response1 = chat.send_message(prompt)
+    print("waddup ", response1.text, GOOGLE_API_KEY)
     return(response1.text)
 
 if __name__ == "__main__":

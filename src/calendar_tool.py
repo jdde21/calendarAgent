@@ -11,8 +11,8 @@ from workers import env
 
 load_dotenv()
 
-CREDENTIALS_PATH = getattr(env, "CREDENTIALS_PATH", None)
-TOKEN_PATH = getattr(env, "TOKEN_PATH", None)
+# CREDENTIALS_PATH = getattr(env, "CREDENTIALS_PATH", None)
+# TOKEN_PATH = getattr(env, "TOKEN_PATH", None)
 
 
 # If modifying these scopes, delete the file token.json.
@@ -25,8 +25,25 @@ def calendar():
   """
 
   
+  # token_info = json.loads(getattr(env, "TOKEN_JSON", None))   # use your actual variable name
+  # token_info = os.getenv("TOKEN_JSON")
+  # creds = Credentials.from_authorized_user_info(token_info, SCOPES)
   token_info = json.loads(getattr(env, "TOKEN_JSON", None))   # use your actual variable name
+  # token_info = os.getenv("TOKEN_JSON")
   creds = Credentials.from_authorized_user_info(token_info, SCOPES)
+
+  # If there are no (valid) credentials available, let the user log in.
+  if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+      creds.refresh(Request())
+    # else:
+    #   flow = InstalledAppFlow.from_client_secrets_file(
+    #       CREDENTIALS_PATH, SCOPES
+    #   )
+    #   creds = flow.run_local_server(port=0)
+    # Save the credentials for the next run
+    # with open(TOKEN_PATH, "w") as token:
+    #   token.write(creds.to_json())
   # if os.path.exists(TOKEN_PATH):
   #   creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
   # if not creds or not creds.valid:
