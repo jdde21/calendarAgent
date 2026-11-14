@@ -79,7 +79,6 @@ async def classroom():
           if not result[courseTitle[course]]:
               del result[courseTitle[course]]
     
-    print(result)
     return result    
     
   except HttpError as error:

@@ -38,8 +38,7 @@ async def telegram_webhook(request: Request):
     if "message" in update:
         chat_id = update["message"]["chat"]["id"]
         user_text = update["message"].get("text", "")
-        # response = chatbot(user_text)
-        response = await classroom()
+        response = await chatbot(user_text)
         await send_telegram_message(chat_id, response)
         print(f"Chat ID from message: {chat_id}")
         
