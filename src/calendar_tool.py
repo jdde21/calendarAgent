@@ -8,6 +8,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from workers import env
+from utils import get_access_token
 
 load_dotenv()
 
@@ -19,7 +20,7 @@ load_dotenv()
 SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 
-def calendar():
+async def calendar():
   """Gets the first ten events of the user in the calendar. 
   Use this tool whenever the user asks for their upcoming events
   """
@@ -30,7 +31,7 @@ def calendar():
   # creds = Credentials.from_authorized_user_info(token_info, SCOPES)
   token_info = json.loads(getattr(env, "TOKEN_JSON", None))   # use your actual variable name
   # token_info = os.getenv("TOKEN_JSON")
-  creds = Credentials.from_authorized_user_info(token_info, SCOPES)
+  access_token = await get_access_token(token_info)
 
   
 

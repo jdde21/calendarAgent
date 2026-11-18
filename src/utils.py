@@ -21,3 +21,7 @@ async def get_access_token(token_info: dict) -> str:
     if "access_token" not in data:
         raise RuntimeError(f"Token refresh failed: {data}")
     return data["access_token"]
+
+def _opts(**kw):
+    # convert a Python dict into a plain JS object for fetch
+    return to_js(kw, dict_converter=Object.fromEntries)
