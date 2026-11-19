@@ -45,12 +45,6 @@ async def telegram_webhook(request: Request):
         
     return {"status": "ok"}
 
-@app.post("/test")
-async def test(request: Request):
-    print()
-        
-    return {"status": "ok"}
-
 @app.on_event("shutdown")
 async def shutdown_event():
     """Clean up the HTTP client session when the server stops."""

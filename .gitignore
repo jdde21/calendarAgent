@@ -11,3 +11,4 @@ backend/startup.py
 python_modules
 .venv
 .venv-workers
+src/one.py

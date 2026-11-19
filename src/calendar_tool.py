@@ -40,7 +40,7 @@ async def calendar():
     now = datetime.datetime.now(tz=datetime.timezone.utc).isoformat()
     params = {"timeMin": now, "maxResults": 10, "singleEvents": "true", "orderBy": "startTime"}
     events_result_url = f"https://www.googleapis.com/calendar/v3/calendars/primary/events?{urlencode(params)}"
-    events_result = gcall(events_result_url, access_token)
+    events_result = await gcall(events_result_url, access_token)
     events = events_result.get("items", [])
 
     if not events:
