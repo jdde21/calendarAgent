@@ -25,3 +25,14 @@ async def get_access_token(token_info: dict) -> str:
 def _opts(**kw):
     # convert a Python dict into a plain JS object for fetch
     return to_js(kw, dict_converter=Object.fromEntries)
+
+async def gcall(url: str, access_token: str) -> dict:
+    resp = await fetch(url, _opts(headers={"Authorization": f"Bearer {access_token}"}))
+    text = await resp.text()
+    return json.loads(text)
+  
+async def list_submissions(course_id: str, access_token: str, BASE: str) -> list:
+    params = urlencode({"userId": "me", "pageSize": 100})
+    url = f"{BASE}/courses/{course_id}/courseWork/-/studentSubmissions?{params}"
+    data = await gcall(url, access_token)
+    return data.get("studentSubmissions", [])

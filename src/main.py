@@ -6,6 +6,7 @@ from fastapi import FastAPI, Request, HTTPException, Header, status
 from chatbot_gemini import chatbot
 from workers import env
 from classroom_tool import classroom
+from calendar_tool import calendar
 
 load_dotenv()
 
@@ -41,6 +42,12 @@ async def telegram_webhook(request: Request):
         response = await chatbot(user_text)
         await send_telegram_message(chat_id, response)
         print(f"Chat ID from message: {chat_id}")
+        
+    return {"status": "ok"}
+
+@app.post("/test")
+async def test(request: Request):
+    print()
         
     return {"status": "ok"}
 

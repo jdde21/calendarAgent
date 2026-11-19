@@ -8,7 +8,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from workers import env
-from utils import get_access_token
+from utils import get_access_token, gcall
+from urllib.parse import urlencode
 
 load_dotenv()
 
@@ -36,20 +37,10 @@ async def calendar():
   
 
   try:
-    service = build("calendar", "v3", credentials=creds)
-
     now = datetime.datetime.now(tz=datetime.timezone.utc).isoformat()
-    events_result = (
-        service.events()
-        .list(
-            calendarId="primary",
-            timeMin=now,
-            maxResults=10,
-            singleEvents=True,
-            orderBy="startTime",
-        )
-        .execute()
-    )
+    params = {"timeMin": now, "maxResults": 10, "singleEvents": "true", "orderBy": "startTime"}
+    events_result_url = f"https://www.googleapis.com/calendar/v3/calendars/primary/events?{urlencode(params)}"
+    events_result = gcall(events_result_url, access_token)
     events = events_result.get("items", [])
 
     if not events:
