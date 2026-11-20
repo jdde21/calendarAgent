@@ -2,7 +2,6 @@ env/
 __pycache__/
 *.pyc
 .env
-secret/
 backend/__pycache__
 backend/shutdown.py
 backend/startup.py
@@ -12,3 +11,4 @@ python_modules
 .venv
 .venv-workers
 src/one.py
+src/secret

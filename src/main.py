@@ -7,6 +7,7 @@ from chatbot_gemini import chatbot
 from workers import env
 from classroom_tool import classroom
 from calendar_tool import calendar
+from email_tool import email
 
 load_dotenv()
 
@@ -44,6 +45,10 @@ async def telegram_webhook(request: Request):
         print(f"Chat ID from message: {chat_id}")
         
     return {"status": "ok"}
+
+@app.get("/test")
+async def test(request: Request):
+    return await email() 
 
 @app.on_event("shutdown")
 async def shutdown_event():

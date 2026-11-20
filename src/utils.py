@@ -1,5 +1,6 @@
 import json
 from urllib.parse import urlencode
+import base64
 from js import fetch, Object
 from pyodide.ffi import to_js
 
@@ -36,3 +37,19 @@ async def list_submissions(course_id: str, access_token: str, BASE: str) -> list
     url = f"{BASE}/courses/{course_id}/courseWork/-/studentSubmissions?{params}"
     data = await gcall(url, access_token)
     return data.get("studentSubmissions", [])
+
+def _decode_b64url(data: str) -> str:
+    # Gmail omits padding, so add it back before decoding
+    padded = data + "=" * (-len(data) % 4)
+    return base64.urlsafe_b64decode(padded).decode("utf-8", errors="replace")
+
+
+def _extract_body(payload: dict) -> str:
+    # Find the text/plain body in simple or multipart messages
+    if payload.get("mimeType") == "text/plain" and payload.get("body", {}).get("data"):
+        return _decode_b64url(payload["body"]["data"])
+    for part in payload.get("parts", []):
+        body = _extract_body(part)
+        if body:
+            return body
+    return ""
