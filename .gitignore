@@ -12,3 +12,4 @@ python_modules
 .venv-workers
 src/one.py
 src/secret
+.DS_Store
